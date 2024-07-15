@@ -50,53 +50,135 @@ class _MLSPageState extends State<MLSPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('MLS Search'),
-      ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            TextField(
-              controller: _mlsNumberController,
-              decoration: InputDecoration(
-                hintText: 'Enter MLS Number',
-                suffixIcon: IconButton(
-                  icon: Icon(Icons.clear),
-                  onPressed: () => _mlsNumberController.clear(),
-                ),
-              ),
-            ),
-            SizedBox(height: 20.0),
-            ElevatedButton(
-              onPressed: () {
-                searchMLS();
-              },
-              child: Text('Search'),
-            ),
-            SizedBox(height: 20.0),
-            if (_searchResults.isNotEmpty)
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: _searchResults.map((row) {
-                  String address = row.sublist(0, 6).join(', ');
-                  String commission = row.length > 8 ? row[8].toString() : 'Information Unavailable';
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(address),
-                      Text('Commission: $commission'),
-                      Divider(),
-                    ],
-                  );
-                }).toList(),
-              ),
-            if (_searchResults.isEmpty && _mlsNumberController.text.isNotEmpty)
-              Text('No matching results found.'),
-            if (_searchResults.isEmpty && _mlsNumberController.text.isEmpty)
-              Text('Enter an MLS number to search.'),
-          ],
+        title: Text(
+          'MLS Search',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
+        centerTitle: true,
+        backgroundColor: Colors.black,
+      ),
+      body: Stack(
+        fit: StackFit.expand,
+        children: <Widget>[
+          Image.asset(
+            'assets/Lighthouse.jpg',
+            fit: BoxFit.cover,
+          ),
+          SingleChildScrollView(
+            padding: EdgeInsets.fromLTRB(20.0, 120.0, 20.0, 20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                Container(
+                  height: 100.0,
+                  margin: EdgeInsets.symmetric(vertical: 20.0),
+                  padding: EdgeInsets.symmetric(horizontal: 20.0),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.9),
+                    borderRadius: BorderRadius.circular(10.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 5,
+                        blurRadius: 7,
+                        offset: Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _mlsNumberController,
+                          style: TextStyle(fontSize: 18.0, color: Colors.black87),
+                          decoration: InputDecoration(
+                            hintText: 'Enter an MLS Number',
+                            hintStyle: TextStyle(fontSize: 16.0, color: Colors.grey),
+                            border: InputBorder.none,
+                            suffixIcon: IconButton(
+                              icon: Icon(Icons.clear),
+                              onPressed: () => _mlsNumberController.clear(),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 10.0),
+                      ElevatedButton(
+                        onPressed: () {
+                          searchMLS();
+                        },
+                        child: Text('Search', style: TextStyle(color: Colors.white)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue[800],
+                          padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 15.0),
+                          textStyle: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 20.0),
+                if (_searchResults.isNotEmpty)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: _searchResults.map((row) {
+                      String houseNumber = row[0];
+                      String streetName = row[1];
+                      String city = row[2];
+                      String state = row[3];
+                      String zip = row[4];
+                      String commission = row.length > 8 ? row[8].toString() : 'N/A';
+                      return Card(
+                        margin: EdgeInsets.symmetric(vertical: 10.0),
+                        child: Padding(
+                          padding: EdgeInsets.all(10.0),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '$houseNumber $streetName'.replaceAll(',', ''),
+                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0, color: Colors.black),
+                                    ),
+                                    Text('$city, $state $zip', style: TextStyle(color: Colors.black54)),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                width: 100.0,
+                                height: 80.0,
+                                alignment: Alignment.center,
+                                color: Colors.blue[700],
+                                child: Text(
+                                  commission,
+                                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20.0),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                if (_searchResults.isEmpty && _mlsNumberController.text.isNotEmpty)
+                  Text(
+                    'No matching results found.',
+                    style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                if (_searchResults.isEmpty && _mlsNumberController.text.isEmpty)
+                  Text(
+                    'Enter an MLS number to search.',
+                    style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic),
+                    textAlign: TextAlign.center,
+                  ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

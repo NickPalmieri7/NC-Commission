@@ -52,7 +52,7 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Color.fromRGBO(8, 14, 128, 1), // Dark blue background
+        backgroundColor: Color.fromRGBO(0, 0, 0, 1), // Dark blue background
         currentIndex: _currentIndex,
         onTap: (index) {
           setState(() {
