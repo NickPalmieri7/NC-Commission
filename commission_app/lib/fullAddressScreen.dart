@@ -54,12 +54,12 @@ class _FullAddressPageState extends State<FullAddressPage> {
         _autocompleteSuggestions.addAll(_addresses
             .where((address) => address.join(' ').contains(query.toUpperCase()))
             .map((address) {
-              if (address.length > 4) {
-                return '${address[0]} ${address[1]}, ${address[3]}, ${address[4]}'; // Format suggestion
-              } else {
-                return 'Invalid address format';
-              }
-            }).toList());
+          if (address.length > 4) {
+            return '${address[0]} ${address[1]}, ${address[3]}, ${address[4]}'; // Format suggestion
+          } else {
+            return 'Invalid address format';
+          }
+        }).toList());
       }
     });
   }
@@ -114,9 +114,9 @@ class _FullAddressPageState extends State<FullAddressPage> {
                   },
                   child: Text('Search'),
                   style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: Color.fromRGBO(57, 137, 201, 1),
+                    foregroundColor: Colors.white, backgroundColor: Color.fromRGBO(37, 117, 181, 1), // White text color
                     padding: EdgeInsets.symmetric(vertical: 15),
+                    textStyle: TextStyle(fontSize: 18), // Increased font size
                   ),
                 ),
                 SizedBox(height: 20),
@@ -130,163 +130,169 @@ class _FullAddressPageState extends State<FullAddressPage> {
   }
 
   Widget _buildSearchInput() {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      SizedBox(height: 40), // Adjusted spacing
-      Container(
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Colors.blue.withOpacity(0.5), // Adjust opacity and color as needed
-              spreadRadius: 5,
-              blurRadius: 7,
-              offset: Offset(0, 3), // changes position of shadow
-            ),
-          ],
-        ),
-        child: TextField(
-          controller: _addressController,
-          onChanged: _autocompleteAddress,
-          decoration: InputDecoration(
-            hintText: 'Enter Full Address',
-            filled: true, // Ensures the text box is filled with white color
-            fillColor: Colors.white, // Sets the background color to white
-            border: OutlineInputBorder(
-              borderSide: BorderSide.none, // Removes the border line
-              borderRadius: BorderRadius.circular(8.0), // Adjust border radius as needed
-            ),
-            contentPadding: EdgeInsets.symmetric(vertical: 15, horizontal: 15), // Increased padding
-            suffixIcon: IconButton(
-              icon: Icon(Icons.clear),
-              onPressed: () {
-                _addressController.clear();
-                setState(() {
-                  _autocompleteSuggestions.clear();
-                });
-              },
-            ),
-          ),
-        ),
-      ),
-      SizedBox(height: 10),
-      _buildAutocompleteSuggestions(),
-    ],
-  );
-}
-
-Widget _buildAutocompleteSuggestions() {
-  return _autocompleteSuggestions.isNotEmpty
-      ? Container(
-          margin: EdgeInsets.only(top: 10.0),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SizedBox(height: 40), // Adjusted spacing
+        Container(
           decoration: BoxDecoration(
             boxShadow: [
               BoxShadow(
                 color: Colors.blue.withOpacity(0.5), // Adjust opacity and color as needed
-                spreadRadius: 2,
-                blurRadius: 5,
+                spreadRadius: 5,
+                blurRadius: 7,
                 offset: Offset(0, 3), // changes position of shadow
               ),
             ],
-            border: Border.all(color: Colors.grey),
-            borderRadius: BorderRadius.circular(5),
-            color: Colors.white, // White background for dropdown
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: _autocompleteSuggestions
-                .map(
-                  (suggestion) => Column(
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          setState(() {
-                            _addressController.text = suggestion;
-                            _autocompleteSuggestions.clear();
-                          });
-                        },
-                        child: Padding(
-                          padding: EdgeInsets.all(10),
-                          child: Text(
-                            suggestion,
-                            style: TextStyle(
-                              color: Colors.black, // Black text color
-                              fontWeight: FontWeight.bold, // Bold text
+          child: TextField(
+            controller: _addressController,
+            onChanged: _autocompleteAddress,
+            decoration: InputDecoration(
+              hintText: 'Enter Full Address',
+              filled: true, // Ensures the text box is filled with white color
+              fillColor: Colors.white, // Sets the background color to white
+              border: OutlineInputBorder(
+                borderSide: BorderSide.none, // Removes the border line
+                borderRadius: BorderRadius.circular(8.0), // Adjust border radius as needed
+              ),
+              contentPadding:
+                  EdgeInsets.symmetric(vertical: 15, horizontal: 15), // Increased padding
+              suffixIcon: IconButton(
+                icon: Icon(Icons.clear),
+                onPressed: () {
+                  _addressController.clear();
+                  setState(() {
+                    _autocompleteSuggestions.clear();
+                  });
+                },
+              ),
+            ),
+          ),
+        ),
+        SizedBox(height: 10),
+        _buildAutocompleteSuggestions(),
+      ],
+    );
+  }
+
+  Widget _buildAutocompleteSuggestions() {
+    return _autocompleteSuggestions.isNotEmpty
+        ? Container(
+            margin: EdgeInsets.only(top: 10.0),
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.blue.withOpacity(0.5), // Adjust opacity and color as needed
+                  spreadRadius: 2,
+                  blurRadius: 5,
+                  offset: Offset(0, 3), // changes position of shadow
+                ),
+              ],
+              border: Border.all(color: Colors.grey),
+              borderRadius: BorderRadius.circular(5),
+              color: Colors.white, // White background for dropdown
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: _autocompleteSuggestions
+                  .map(
+                    (suggestion) => Column(
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            setState(() {
+                              _addressController.text = suggestion;
+                              _autocompleteSuggestions.clear();
+                            });
+                          },
+                          child: Padding(
+                            padding: EdgeInsets.all(10),
+                            child: Text(
+                              suggestion,
+                              style: TextStyle(
+                                color: Colors.black, // Black text color
+                                fontWeight: FontWeight.bold, // Bold text
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      Divider(height: 1, color: Colors.grey), // Divider between suggestions
-                    ],
-                  ),
-                )
-                .toList(),
-          ),
-        )
-      : SizedBox.shrink();
-}
-
-  Widget _buildOutputContainer() {
-    return _hasSearched
-        ? _searchResults.isNotEmpty
-            ? Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: _searchResults.map((result) {
-                  if (result.length > 8) {
-                    String address = '${result[0]} ${result[1]}';
-                    String cityStateZip = '${result[3]}, ${result[4]} ${result[5]}';
-                    String commission = result[8];
-
-                    return Card(
-                      margin: EdgeInsets.symmetric(vertical: 10.0),
-                      child: Padding(
-                        padding: EdgeInsets.all(10.0),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    address,
-                                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0, color: Colors.black),
-                                  ),
-                                  Text(
-                                    cityStateZip,
-                                    style: TextStyle(fontSize: 14.0, color: Colors.black54),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              width: 80.0,
-                              height: 80.0,
-                              alignment: Alignment.center,
-                              color: Colors.blue[700],
-                              child: Text(
-                                commission,
-                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20.0),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  } else {
-                    return Container();
-                  }
-                }).toList(),
-              )
-            : Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                padding: EdgeInsets.all(10),
-                margin: EdgeInsets.only(top: 20),
-                child: Text('No results found', style: TextStyle(fontSize: 16, color: Colors.white)),
-              )
-        : SizedBox.shrink(); // Hide the output container before searching
+                        Divider(height: 1, color: Colors.grey), // Divider between suggestions
+                      ],
+                    ),
+                  )
+                  .toList(),
+            ),
+          )
+        : SizedBox.shrink();
   }
+
+Widget _buildOutputContainer() {
+  return _hasSearched
+      ? _searchResults.isNotEmpty
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: _searchResults.map((result) {
+                if (result.length > 8) {
+                  String address = '${result[0]} ${result[1]}';
+                  String cityStateZip = '${result[3]}, ${result[4]} ${result[5]}';
+                  String commission = result[8];
+
+                  // Check if commission already contains '%'
+                  if (!commission.endsWith('%')) {
+                    commission = '$commission%'; // Append '%' if not present
+                  }
+
+                  return Card(
+                    margin: EdgeInsets.symmetric(vertical: 10.0),
+                    child: Padding(
+                      padding: EdgeInsets.all(10.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  address,
+                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0, color: Colors.black),
+                                ),
+                                Text(
+                                  cityStateZip,
+                                  style: TextStyle(fontSize: 14.0, color: Colors.black54),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            width: 80.0,
+                            height: 80.0,
+                            alignment: Alignment.center,
+                            color: Colors.blue[700],
+                            child: Text(
+                              commission,
+                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20.0),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                } else {
+                  return Container();
+                }
+              }).toList(),
+            )
+          : Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(5),
+              ),
+              padding: EdgeInsets.all(10),
+              margin: EdgeInsets.only(top: 20),
+              child: Text('No results found', style: TextStyle(fontSize: 16, color: Colors.white)),
+            )
+      : SizedBox.shrink(); // Hide the output container before searching
+}
 }
