@@ -2,49 +2,51 @@ import 'package:flutter/material.dart';
 import 'mlsScreen.dart';
 import 'fullAddressScreen.dart';
 import 'wideAddressSearch.dart';
-import 'loginScreen.dart';
+import 'selectionPage.dart'; // Import the new SelectionPage
 
 void main() => runApp(
       MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: LoginPage(), // Initially load LoginPage
+        home: SelectionPage(), // Initially load SelectionPage
       ),
     );
-
-class LoginPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color.fromRGBO(8, 14, 128, 1), // Dark blue background
-        centerTitle: true, // Center align the title
-        title: Text(
-          'Login',
-          style: TextStyle(
-            color: Colors.white, // White lettering
-            fontWeight: FontWeight.bold, // Bold text
-            fontSize: 24, // Larger font size
-          ),
-        ),
-      ),
-      body: LoginScreen(), // Display the login screen
-    );
-  }
-}
 
 class HomePage extends StatefulWidget {
+  final int initialIndex;
+
+  HomePage({required this.initialIndex});
+
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  int _currentIndex = 0;
+  late int _currentIndex;
+  late PageController _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.initialIndex;
+    _pageController = PageController(initialPage: _currentIndex);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: (index) {
+          setState(() {
+            _currentIndex = index; // Update current index on swipe
+          });
+        },
         children: [
           MLSPage(), // Left screen with MLS search
           FullAddressPage(), // Middle screen with full address
@@ -52,11 +54,16 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Color.fromRGBO(0, 0, 0, 1), // Dark blue background
+        backgroundColor: Colors.black,
         currentIndex: _currentIndex,
         onTap: (index) {
           setState(() {
             _currentIndex = index; // Update current index on tap
+            _pageController.animateToPage(
+              index,
+              duration: Duration(milliseconds: 300),
+              curve: Curves.ease,
+            );
           });
         },
         items: [
@@ -85,4 +92,3 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
-

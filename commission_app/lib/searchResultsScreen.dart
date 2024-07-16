@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'helpScreen.dart';
 
 class SearchResultsScreen extends StatelessWidget {
   final List<List<String>> searchResults;
@@ -25,6 +26,17 @@ class SearchResultsScreen extends StatelessWidget {
             Navigator.pop(context); // Navigate back when pressed
           },
         ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.help_outline),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => HelpScreen()),
+              );
+            },
+          ),
+        ],
       ),
       body: Stack(
         children: [

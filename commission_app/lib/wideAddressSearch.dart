@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'searchResultsScreen.dart';
+import 'helpScreen.dart';
 
 class IndividualAddressPage extends StatefulWidget {
   @override
@@ -27,7 +28,7 @@ class _IndividualAddressPageState extends State<IndividualAddressPage> {
 
   void _fetchAddresses() async {
     final String spreadsheetId = '1oLgGHNXHSLVy_2Pu2XANr4pIiZzVuGGAFxPcnKXQaEg';
-    final String apiKey = 'AIzaSyCimNStnnBIFYVP5LLmvvEP8t_L9TudqHA'; // Replace with your Google Sheets API key
+    final String apiKey = 'AIzaSyCimNStnnBIFYVP5LLmvvEP8t_L9TudqHA';
     final String range = 'APIQueryFiltered!A:I'; // Adjust range as per your sheet structure
 
     final Uri uri = Uri.parse(
@@ -54,111 +55,176 @@ class _IndividualAddressPageState extends State<IndividualAddressPage> {
     }
   }
 
-void _searchByPartialAddress() {
-  final matches = _addresses.where((address) {
-    String streetNumber = _streetNumberController.text.trim().toUpperCase();
-    String streetName = _streetNameController.text.trim().toUpperCase();
-    String city = _cityController.text.trim().toUpperCase();
-    String stateInput = _stateController.text.trim().toUpperCase();
-    String zip = _zipController.text.trim().toUpperCase();
+  void _searchByFullAddress() {
+    final matches = _addresses.where((address) {
+      String streetNumber = _streetNumberController.text.trim().toUpperCase();
+      String streetName = _streetNameController.text.trim().toUpperCase();
+      String city = _cityController.text.trim().toUpperCase();
+      String stateInput = _stateController.text.trim().toUpperCase();
+      String zip = _zipController.text.trim().toUpperCase();
 
-    // Ensure address has at least 6 elements before accessing indices 0-5
-    if (address.length < 6) return false;
+      // Ensure address has at least 6 elements before accessing indices 0-5
+      if (address.length < 6) return false;
 
-    bool matchStreetNumber = streetNumber.isEmpty || address[0].startsWith(streetNumber);
-    bool matchStreetName = streetName.isEmpty || address[1].startsWith(streetName);
-    bool matchCity = city.isEmpty || address[3].startsWith(city);
-    bool matchZip = zip.isEmpty || address[5].startsWith(zip);
+      bool matchStreetNumber = streetNumber.isEmpty || address[0].startsWith(streetNumber);
+      bool matchStreetName = streetName.isEmpty || address[1].startsWith(streetName);
+      bool matchCity = city.isEmpty || address[3].startsWith(city);
+      bool matchZip = zip.isEmpty || address[5].startsWith(zip);
 
-    // Match state abbreviation or full state name
-    bool matchState = stateInput.isEmpty || _matchesState(stateInput, address[4].toUpperCase());
+      // Match state abbreviation or full state name
+      bool matchState = stateInput.isEmpty || _matchesState(stateInput, address[4].toUpperCase());
 
-    return matchStreetNumber && matchStreetName && matchCity && matchState && matchZip;
-  }).toList();
-
-  setState(() {
-    _searchResults = matches.map((result) {
-      // Ensure commission value has '%' appended if missing
-      if (result.length > 8) {
-        String commission = result[8];
-        if (!commission.endsWith('%')) {
-          commission = '$commission%'; // Append '%' if not present
-          result[8] = commission; // Update the commission value in result
-        }
-      }
-      return result;
+      return matchStreetNumber && matchStreetName && matchCity && matchState && matchZip;
     }).toList();
-    _hasSearched = true;
-  });
 
-  // Navigate to results screen with search results
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => SearchResultsScreen(searchResults: _searchResults),
-    ),
-  );
+    setState(() {
+      _searchResults = matches.map((result) {
+        // Ensure commission value has '%' appended if missing
+        if (result.length > 8) {
+          String commission = result[8];
+          if (!commission.endsWith('%')) {
+            commission = '$commission%'; // Append '%' if not present
+            result[8] = commission; // Update the commission value in result
+          }
+        }
+        return result;
+      }).toList();
+      _hasSearched = true;
+    });
+    Widget _buildOutputContainer() {
+  return _hasSearched
+      ? _searchResults.isNotEmpty
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: _searchResults.map((result) {
+                String address = '${result[0]} ${result[1]}';
+                String cityStateZip = '${result[3]}, ${result[4]} ${result[5]}';
+                String commission = result[8];
+                String flatRate = result.length > 9 ? result[9] : ''; // Check if flatRate exists
+
+                bool isFlatRate = flatRate.isNotEmpty &&
+                    double.tryParse(flatRate) != null &&
+                    double.parse(flatRate) > 100;
+
+                String displayValue = isFlatRate ? '\$$flatRate' : '$commission%';
+                Color boxColor = isFlatRate ? Colors.green : Colors.blue[700]!;
+
+                return Card(
+                  margin: EdgeInsets.symmetric(vertical: 10.0),
+                  child: Padding(
+                    padding: EdgeInsets.all(10.0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                address,
+                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0, color: Colors.black),
+                              ),
+                              Text(
+                                cityStateZip,
+                                style: TextStyle(fontSize: 14.0, color: Colors.black54),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          width: 80.0,
+                          height: 80.0,
+                          alignment: Alignment.center,
+                          color: boxColor,
+                          child: Text(
+                            displayValue,
+                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20.0),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
+            )
+          : Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(5),
+              ),
+              padding: EdgeInsets.all(10),
+              margin: EdgeInsets.only(top: 20),
+              child: Text('No results found', style: TextStyle(fontSize: 16, color: Colors.white)),
+            )
+      : SizedBox.shrink(); // Hide the output container before searching
 }
+    // Navigate to results screen with search results
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SearchResultsScreen(searchResults: _searchResults),
+      ),
+    );
+  }
 
-bool _matchesState(String input, String sheetState) {
-  // Define mappings for state abbreviations
-  Map<String, String> stateAbbreviations = {
-    'AL': 'ALABAMA',
-    'AK': 'ALASKA',
-    'AZ': 'ARIZONA',
-    'AR': 'ARKANSAS',
-    'CA': 'CALIFORNIA',
-    'CO': 'COLORADO',
-    'CT': 'CONNECTICUT',
-    'DE': 'DELAWARE',
-    'FL': 'FLORIDA',
-    'GA': 'GEORGIA',
-    'HI': 'HAWAII',
-    'ID': 'IDAHO',
-    'IL': 'ILLINOIS',
-    'IN': 'INDIANA',
-    'IA': 'IOWA',
-    'KS': 'KANSAS',
-    'KY': 'KENTUCKY',
-    'LA': 'LOUISIANA',
-    'ME': 'MAINE',
-    'MD': 'MARYLAND',
-    'MA': 'MASSACHUSETTS',
-    'MI': 'MICHIGAN',
-    'MN': 'MINNESOTA',
-    'MS': 'MISSISSIPPI',
-    'MO': 'MISSOURI',
-    'MT': 'MONTANA',
-    'NE': 'NEBRASKA',
-    'NV': 'NEVADA',
-    'NH': 'NEW HAMPSHIRE',
-    'NJ': 'NEW JERSEY',
-    'NM': 'NEW MEXICO',
-    'NY': 'NEW YORK',
-    'NC': 'NORTH CAROLINA',
-    'ND': 'NORTH DAKOTA',
-    'OH': 'OHIO',
-    'OK': 'OKLAHOMA',
-    'OR': 'OREGON',
-    'PA': 'PENNSYLVANIA',
-    'RI': 'RHODE ISLAND',
-    'SC': 'SOUTH CAROLINA',
-    'SD': 'SOUTH DAKOTA',
-    'TN': 'TENNESSEE',
-    'TX': 'TEXAS',
-    'UT': 'UTAH',
-    'VT': 'VERMONT',
-    'VA': 'VIRGINIA',
-    'WA': 'WASHINGTON',
-    'WV': 'WEST VIRGINIA',
-    'WI': 'WISCONSIN',
-    'WY': 'WYOMING',
-  };
+  bool _matchesState(String input, String sheetState) {
+    // Define mappings for state abbreviations
+    Map<String, String> stateAbbreviations = {
+      'AL': 'ALABAMA',
+      'AK': 'ALASKA',
+      'AZ': 'ARIZONA',
+      'AR': 'ARKANSAS',
+      'CA': 'CALIFORNIA',
+      'CO': 'COLORADO',
+      'CT': 'CONNECTICUT',
+      'DE': 'DELAWARE',
+      'FL': 'FLORIDA',
+      'GA': 'GEORGIA',
+      'HI': 'HAWAII',
+      'ID': 'IDAHO',
+      'IL': 'ILLINOIS',
+      'IN': 'INDIANA',
+      'IA': 'IOWA',
+      'KS': 'KANSAS',
+      'KY': 'KENTUCKY',
+      'LA': 'LOUISIANA',
+      'ME': 'MAINE',
+      'MD': 'MARYLAND',
+      'MA': 'MASSACHUSETTS',
+      'MI': 'MICHIGAN',
+      'MN': 'MINNESOTA',
+      'MS': 'MISSISSIPPI',
+      'MO': 'MISSOURI',
+      'MT': 'MONTANA',
+      'NE': 'NEBRASKA',
+      'NV': 'NEVADA',
+      'NH': 'NEW HAMPSHIRE',
+      'NJ': 'NEW JERSEY',
+      'NM': 'NEW MEXICO',
+      'NY': 'NEW YORK',
+      'NC': 'NORTH CAROLINA',
+      'ND': 'NORTH DAKOTA',
+      'OH': 'OHIO',
+      'OK': 'OKLAHOMA',
+      'OR': 'OREGON',
+      'PA': 'PENNSYLVANIA',
+      'RI': 'RHODE ISLAND',
+      'SC': 'SOUTH CAROLINA',
+      'SD': 'SOUTH DAKOTA',
+      'TN': 'TENNESSEE',
+      'TX': 'TEXAS',
+      'UT': 'UTAH',
+      'VT': 'VERMONT',
+      'VA': 'VIRGINIA',
+      'WA': 'WASHINGTON',
+      'WV': 'WEST VIRGINIA',
+      'WI': 'WISCONSIN',
+      'WY': 'WYOMING',
+    };
 
-  // Check if input matches state or abbreviation
-  return sheetState == input || stateAbbreviations.containsKey(input) && stateAbbreviations[input] == sheetState;
-}
-
+    // Check if input matches state or abbreviation
+    return sheetState == input || stateAbbreviations.containsKey(input) && stateAbbreviations[input] == sheetState;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -169,6 +235,17 @@ bool _matchesState(String input, String sheetState) {
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.help_outline),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => HelpScreen()),
+              );
+            },
+          ),
+        ],
         backgroundColor: Colors.black,
       ),
       body: Stack(
@@ -196,13 +273,13 @@ bool _matchesState(String input, String sheetState) {
                 _buildInputField('Zip Code', _zipController),
                 SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: _searchByPartialAddress,
+                  onPressed: _searchByFullAddress,
                   child: Text('Search'),
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
                     backgroundColor: Colors.blue[800],
                     padding: EdgeInsets.symmetric(vertical: 15),
-                    textStyle: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                    textStyle: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
                   ),
                 ),
                 SizedBox(height: 20),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'helpScreen.dart';
 
 class FullAddressPage extends StatefulWidget {
   @override
@@ -23,7 +24,7 @@ class _FullAddressPageState extends State<FullAddressPage> {
   void _fetchAddresses() async {
     final String spreadsheetId = '1oLgGHNXHSLVy_2Pu2XANr4pIiZzVuGGAFxPcnKXQaEg';
     final String apiKey = 'AIzaSyCimNStnnBIFYVP5LLmvvEP8t_L9TudqHA';
-    final String range = 'APIQueryFiltered!A:I'; // Adjusted to include the commission column
+    final String range = 'APIQueryFiltered!A:J'; // Adjusted to include columns A to J
 
     final Uri uri = Uri.parse(
         'https://sheets.googleapis.com/v4/spreadsheets/$spreadsheetId/values/$range?key=$apiKey');
@@ -88,6 +89,17 @@ class _FullAddressPageState extends State<FullAddressPage> {
           'Full Address Search',
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white), // Bold white text
         ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.help_outline),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => HelpScreen()),
+              );
+            },
+          ),
+        ],
         centerTitle: true,
       ),
       body: Stack(
@@ -227,72 +239,73 @@ class _FullAddressPageState extends State<FullAddressPage> {
         : SizedBox.shrink();
   }
 
-Widget _buildOutputContainer() {
-  return _hasSearched
-      ? _searchResults.isNotEmpty
-          ? Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: _searchResults.map((result) {
-                if (result.length > 8) {
-                  String address = '${result[0]} ${result[1]}';
-                  String cityStateZip = '${result[3]}, ${result[4]} ${result[5]}';
-                  String commission = result[8];
+  Widget _buildOutputContainer() {
+    return _hasSearched
+        ? _searchResults.isNotEmpty
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: _searchResults.map((result) {
+                  if (result.length > 9) {
+                    String address = '${result[0]} ${result[1]}';
+                    String cityStateZip = '${result[3]}, ${result[4]} ${result[5]}';
+                    String commission = result[8];
+                    String flatRate = result[9];
 
-                  // Check if commission already contains '%'
-                  if (!commission.endsWith('%')) {
-                    commission = '$commission%'; // Append '%' if not present
-                  }
+                    bool isFlatRate = double.tryParse(flatRate) != null && double.parse(flatRate) > 100;
 
-                  return Card(
-                    margin: EdgeInsets.symmetric(vertical: 10.0),
-                    child: Padding(
-                      padding: EdgeInsets.all(10.0),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  address,
-                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0, color: Colors.black),
-                                ),
-                                Text(
-                                  cityStateZip,
-                                  style: TextStyle(fontSize: 14.0, color: Colors.black54),
-                                ),
-                              ],
+                    String displayValue = isFlatRate ? '\$$flatRate' : '$commission%';
+                    Color boxColor = isFlatRate ? Colors.green : Colors.blue[700]!;
+
+                    return Card(
+                      margin: EdgeInsets.symmetric(vertical: 10.0),
+                      child: Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    address,
+                                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0, color: Colors.black),
+                                  ),
+                                  Text(
+                                    cityStateZip,
+                                    style: TextStyle(fontSize: 14.0, color: Colors.black54),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                          Container(
-                            width: 80.0,
-                            height: 80.0,
-                            alignment: Alignment.center,
-                            color: Colors.blue[700],
-                            child: Text(
-                              commission,
-                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20.0),
+                            Container(
+                              width: 80.0,
+                              height: 80.0,
+                              alignment: Alignment.center,
+                              color: boxColor,
+                              child: Text(
+                                displayValue,
+                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20.0),
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                } else {
-                  return Container();
-                }
-              }).toList(),
-            )
-          : Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
-                borderRadius: BorderRadius.circular(5),
-              ),
-              padding: EdgeInsets.all(10),
-              margin: EdgeInsets.only(top: 20),
-              child: Text('No results found', style: TextStyle(fontSize: 16, color: Colors.white)),
-            )
-      : SizedBox.shrink(); // Hide the output container before searching
-}
+                    );
+                  } else {
+                    return Container();
+                  }
+                }).toList(),
+              )
+            : Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                padding: EdgeInsets.all(10),
+                margin: EdgeInsets.only(top: 20),
+                child: Text('No results found', style: TextStyle(fontSize: 16, color: Colors.white)),
+              )
+        : SizedBox.shrink(); // Hide the output container before searching
+  }
 }

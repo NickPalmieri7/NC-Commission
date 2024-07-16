@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'helpScreen.dart';
 
 class MLSPage extends StatefulWidget {
   @override
@@ -12,18 +13,15 @@ class _MLSPageState extends State<MLSPage> {
   List<dynamic> _searchResults = [];
 
   void searchMLS() async {
-    // Replace with your Google Sheets API Key
-    final String apiKey = 'AIzaSyCimNStnnBIFYVP5LLmvvEP8t_L9TudqHA';
-    // Replace with your Google Sheets Spreadsheet ID
     final String spreadsheetId = '1oLgGHNXHSLVy_2Pu2XANr4pIiZzVuGGAFxPcnKXQaEg';
-    final String range = 'APIQueryFiltered!A:I'; // Adjust range as per your sheet structure
+    final String apiKey = 'AIzaSyCimNStnnBIFYVP5LLmvvEP8t_L9TudqHA';
+    final String range = 'APIQueryFiltered!A:J';
 
     String mlsNumber = _mlsNumberController.text.trim();
     if (mlsNumber.isEmpty) {
-      return; // Exit if MLS number is empty
+      return;
     }
 
-    // Construct the URL for the Google Sheets API
     final String url = 'https://sheets.googleapis.com/v4/spreadsheets/$spreadsheetId/values/$range?key=$apiKey';
 
     try {
@@ -32,7 +30,6 @@ class _MLSPageState extends State<MLSPage> {
         final data = json.decode(response.body);
         List<dynamic> values = data['values'];
 
-        // Filter results based on MLS number
         List<dynamic> results = values.where((row) => row.length > 7 && row[7] == mlsNumber).toList();
 
         setState(() {
@@ -56,6 +53,17 @@ class _MLSPageState extends State<MLSPage> {
         ),
         centerTitle: true,
         backgroundColor: Colors.black,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.help_outline),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => HelpScreen()),
+              );
+            },
+          ),
+        ],
       ),
       body: Stack(
         fit: StackFit.expand,
@@ -93,7 +101,8 @@ class _MLSPageState extends State<MLSPage> {
                           style: TextStyle(fontSize: 18.0, color: Colors.black87),
                           decoration: InputDecoration(
                             hintText: 'Enter an MLS Number',
-                            hintStyle: TextStyle(fontSize: 16.0, color: Colors.grey),
+                            hintStyle:
+                                TextStyle(fontSize: 16.0, color: Color.fromARGB(255, 158, 157, 157)),
                             border: InputBorder.none,
                             suffixIcon: IconButton(
                               icon: Icon(Icons.clear),
@@ -128,6 +137,20 @@ class _MLSPageState extends State<MLSPage> {
                       String state = row[3];
                       String zip = row[4];
                       String commission = row.length > 8 ? row[8].toString() : 'N/A';
+                      String flatRate = row.length > 9 ? row[9].toString() : 'N/A';
+
+                      String displayedCommission = commission;
+                      Color backgroundColor = Colors.blue;
+
+                      if (flatRate != 'N/A' && int.tryParse(flatRate) != null && int.parse(flatRate) > 100) {
+                        displayedCommission = '\$$flatRate';
+                        backgroundColor = Colors.green;
+                      } else {
+                        if (!commission.endsWith('%')) {
+                          displayedCommission = '$commission%';
+                        }
+                      }
+
                       return Card(
                         margin: EdgeInsets.symmetric(vertical: 10.0),
                         child: Padding(
@@ -141,7 +164,8 @@ class _MLSPageState extends State<MLSPage> {
                                   children: [
                                     Text(
                                       '$houseNumber $streetName'.replaceAll(',', ''),
-                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0, color: Colors.black),
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold, fontSize: 16.0, color: Colors.black),
                                     ),
                                     Text('$city, $state $zip', style: TextStyle(color: Colors.black54)),
                                   ],
@@ -151,9 +175,9 @@ class _MLSPageState extends State<MLSPage> {
                                 width: 100.0,
                                 height: 80.0,
                                 alignment: Alignment.center,
-                                color: Colors.blue[700],
+                                color: backgroundColor,
                                 child: Text(
-                                  commission,
+                                  displayedCommission,
                                   style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20.0),
                                 ),
                               ),
@@ -172,7 +196,7 @@ class _MLSPageState extends State<MLSPage> {
                 if (_searchResults.isEmpty && _mlsNumberController.text.isEmpty)
                   Text(
                     'Enter an MLS number to search.',
-                    style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic),
+                    style: TextStyle(color: const Color.fromARGB(255, 255, 255, 255), fontSize: 16),
                     textAlign: TextAlign.center,
                   ),
               ],

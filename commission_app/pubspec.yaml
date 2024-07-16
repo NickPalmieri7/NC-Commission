@@ -70,6 +70,9 @@ flutter:
     - assets/AppBackground.jpg
     - assets/Lighthouse.jpg
     - assets/DarkHouse.jpg
+    - assets/Logo.png
+    - assets/blueSquare.png
+    - assets/greenBox.png
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 
