@@ -12,10 +12,12 @@ class SelectionPage extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/Lighthouse.jpg'), // Replace with your background photo
+                image: AssetImage('assets/Lighthouse.jpg'),
                 fit: BoxFit.cover,
                 colorFilter: ColorFilter.mode(
-                    Colors.black.withOpacity(0.5), BlendMode.darken), // Add a dark overlay
+                  Colors.black.withOpacity(0.5),
+                  BlendMode.darken,
+                ),
               ),
             ),
           ),
@@ -26,49 +28,41 @@ class SelectionPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   Container(
-                    padding: EdgeInsets.all(10), // Add some padding to the logo container
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.3), // Semi-transparent background
-                      borderRadius: BorderRadius.circular(10), // Optional: rounded corners for the container
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.5),
-                          blurRadius: 10,
-                          offset: Offset(0, 5),
-                        ),
-                      ],
-                    ),
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    padding: EdgeInsets.all(12),
                     child: Image.asset(
-                      'assets/Logo.png', // Replace with your logo photo
-                      fit: BoxFit.contain, // Adjust to contain the logo without being cut off
+                      'assets/Logo.png',
+                      fit: BoxFit.contain,
                     ),
                   ),
-                  SizedBox(height: 20), // Adjust spacing as needed
+                  SizedBox(height: 24), // Adjust spacing
                   Text(
                     "Please choose an option:",
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 20,
+                      fontSize: 18, // Adjust font size
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 20), // Adjust spacing as needed
+                  SizedBox(height: 16), // Adjust spacing
                   _buildSelectionButton(
                     context,
                     'MLS Search',
-                    Icons.home,
+                    Icons.search,
                     HomePage(initialIndex: 0),
                   ),
+                  SizedBox(height: 16), // Adjust spacing
                   _buildSelectionButton(
                     context,
                     'Full Address Search',
                     Icons.search,
                     HomePage(initialIndex: 1),
                   ),
+                  SizedBox(height: 16), // Adjust spacing
                   _buildSelectionButton(
                     context,
                     'Partial Address Search',
-                    Icons.location_city,
+                    Icons.search,
                     HomePage(initialIndex: 2),
                   ),
                 ],
@@ -83,19 +77,12 @@ class SelectionPage extends StatelessWidget {
   Widget _buildSelectionButton(
       BuildContext context, String text, IconData icon, Widget page) {
     return Container(
-      width: double.infinity,
-      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-      padding: EdgeInsets.all(10),
+      width: 300, // Adjust width of selection button container
+      padding: EdgeInsets.all(12),
+      margin: EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.3), // Semi-transparent background for each box
-        borderRadius: BorderRadius.circular(10), // Optional: rounded corners
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.4),
-            blurRadius: 10,
-            offset: Offset(0, 5),
-          ),
-        ],
+        color: Colors.white.withOpacity(0.3),
+        borderRadius: BorderRadius.circular(8),
       ),
       child: GestureDetector(
         onTap: () {
@@ -105,22 +92,22 @@ class SelectionPage extends StatelessWidget {
           );
         },
         child: Container(
-          padding: EdgeInsets.all(20),
+          padding: EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.9), // Semi-transparent white background
-            borderRadius: BorderRadius.circular(10), // Remove the rounded corners
+            color: Colors.white.withOpacity(0.8),
+            borderRadius: BorderRadius.circular(8),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Icon(icon, color: Colors.black),
-              SizedBox(width: 10),
+              Icon(icon, color: Colors.black, size: 24),
+              SizedBox(width: 8),
               Text(
                 text,
                 style: TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
-                  fontSize: 18,
+                  fontSize: 16,
                 ),
               ),
             ],

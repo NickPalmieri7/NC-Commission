@@ -117,7 +117,7 @@ class _FullAddressPageState extends State<FullAddressPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SizedBox(height: 60), // Add space above the search box
+                SizedBox(height: 20), // Add space above the search box
                 _buildSearchInput(),
                 SizedBox(height: 20),
                 ElevatedButton(

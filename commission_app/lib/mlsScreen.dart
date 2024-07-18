@@ -73,12 +73,12 @@ class _MLSPageState extends State<MLSPage> {
             fit: BoxFit.cover,
           ),
           SingleChildScrollView(
-            padding: EdgeInsets.fromLTRB(20.0, 120.0, 20.0, 20.0),
+            padding: EdgeInsets.fromLTRB(20.0, 62.0, 20.0, 20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 Container(
-                  height: 100.0,
+                  height: 90.0,
                   margin: EdgeInsets.symmetric(vertical: 20.0),
                   padding: EdgeInsets.symmetric(horizontal: 20.0),
                   decoration: BoxDecoration(
@@ -100,7 +100,7 @@ class _MLSPageState extends State<MLSPage> {
                           controller: _mlsNumberController,
                           style: TextStyle(fontSize: 18.0, color: Colors.black87),
                           decoration: InputDecoration(
-                            hintText: 'Enter an MLS Number',
+                            hintText: 'Enter an MLS',
                             hintStyle:
                                 TextStyle(fontSize: 16.0, color: Color.fromARGB(255, 158, 157, 157)),
                             border: InputBorder.none,
@@ -195,7 +195,7 @@ class _MLSPageState extends State<MLSPage> {
                   ),
                 if (_searchResults.isEmpty && _mlsNumberController.text.isEmpty)
                   Text(
-                    'Enter an MLS number to search.',
+                    ' ',
                     style: TextStyle(color: const Color.fromARGB(255, 255, 255, 255), fontSize: 16),
                     textAlign: TextAlign.center,
                   ),
