@@ -49,13 +49,13 @@ class _MLSPageState extends State<MLSPage> {
       appBar: AppBar(
         title: Text(
           'MLS Search',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(color: Colors.white, ),
         ),
         centerTitle: true,
         backgroundColor: Colors.black,
         actions: [
           IconButton(
-            icon: Icon(Icons.help_outline),
+            icon: Icon(Icons.help_outline, color: Colors.white), 
             onPressed: () {
               Navigator.push(
                 context,
@@ -64,6 +64,7 @@ class _MLSPageState extends State<MLSPage> {
             },
           ),
         ],
+        automaticallyImplyLeading: false,
       ),
       body: Stack(
         fit: StackFit.expand,
@@ -118,7 +119,7 @@ class _MLSPageState extends State<MLSPage> {
                         },
                         child: Text('Search', style: TextStyle(color: Colors.white)),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue[800],
+                          backgroundColor: Colors.black,
                           padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 15.0),
                           textStyle: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
                         ),

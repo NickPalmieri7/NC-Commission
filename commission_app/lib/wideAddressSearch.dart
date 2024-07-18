@@ -95,58 +95,67 @@ class _IndividualAddressPageState extends State<IndividualAddressPage> {
   return _hasSearched
       ? _searchResults.isNotEmpty
           ? Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: _searchResults.map((result) {
-                String address = '${result[0]} ${result[1]}';
-                String cityStateZip = '${result[3]}, ${result[4]} ${result[5]}';
-                String commission = result[8];
-                String flatRate = result.length > 9 ? result[9] : ''; // Check if flatRate exists
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: _searchResults.map((result) {
+                  if (result.length > 8) { // Adjusted to include up to column I (commission)
+                    String address = '${result[0]} ${result[1]}';
+                    String cityStateZip = '${result[3]}, ${result[4]} ${result[5]}';
+                    String commission = result[8];
 
-                bool isFlatRate = flatRate.isNotEmpty &&
-                    double.tryParse(flatRate) != null &&
-                    double.parse(flatRate) > 100;
+                    double commissionValue = double.tryParse(commission) ?? 0;
 
-                String displayValue = isFlatRate ? '\$$flatRate' : '$commission%';
-                Color boxColor = isFlatRate ? Colors.green : Colors.blue[700]!;
-
-                return Card(
-                  margin: EdgeInsets.symmetric(vertical: 10.0),
-                  child: Padding(
-                    padding: EdgeInsets.all(10.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                address,
-                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0, color: Colors.black),
+                    return Card(
+                      margin: EdgeInsets.symmetric(vertical: 10.0),
+                      child: Padding(
+                        padding: EdgeInsets.all(10.0),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    address,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16.0,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  Text(
+                                    cityStateZip,
+                                    style: TextStyle(
+                                      fontSize: 14.0,
+                                      color: Colors.black54,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              Text(
-                                cityStateZip,
-                                style: TextStyle(fontSize: 14.0, color: Colors.black54),
+                            ),
+                            Container(
+                              width: 80.0,
+                              height: 80.0,
+                              alignment: Alignment.center,
+                              color: commissionValue > 100 ? Colors.green : Colors.blue[700],
+                              child: Text(
+                                commissionValue > 100 ? '\$${commissionValue.toStringAsFixed(2)}' : '$commission%',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: commissionValue > 100 ? 18.0 : 20.0, // Smaller font size for dollar amounts
+                                ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                        Container(
-                          width: 80.0,
-                          height: 80.0,
-                          alignment: Alignment.center,
-                          color: boxColor,
-                          child: Text(
-                            displayValue,
-                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20.0),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              }).toList(),
-            )
+                      ),
+                    );
+                  } else {
+                    return Container();
+                  }
+                }).toList(),
+              )
           : Container(
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.grey),
@@ -158,6 +167,8 @@ class _IndividualAddressPageState extends State<IndividualAddressPage> {
             )
       : SizedBox.shrink(); // Hide the output container before searching
 }
+
+
     // Navigate to results screen with search results
     Navigator.push(
       context,
@@ -168,63 +179,70 @@ class _IndividualAddressPageState extends State<IndividualAddressPage> {
   }
 
   bool _matchesState(String input, String sheetState) {
-    // Define mappings for state abbreviations
-    Map<String, String> stateAbbreviations = {
-      'AL': 'ALABAMA',
-      'AK': 'ALASKA',
-      'AZ': 'ARIZONA',
-      'AR': 'ARKANSAS',
-      'CA': 'CALIFORNIA',
-      'CO': 'COLORADO',
-      'CT': 'CONNECTICUT',
-      'DE': 'DELAWARE',
-      'FL': 'FLORIDA',
-      'GA': 'GEORGIA',
-      'HI': 'HAWAII',
-      'ID': 'IDAHO',
-      'IL': 'ILLINOIS',
-      'IN': 'INDIANA',
-      'IA': 'IOWA',
-      'KS': 'KANSAS',
-      'KY': 'KENTUCKY',
-      'LA': 'LOUISIANA',
-      'ME': 'MAINE',
-      'MD': 'MARYLAND',
-      'MA': 'MASSACHUSETTS',
-      'MI': 'MICHIGAN',
-      'MN': 'MINNESOTA',
-      'MS': 'MISSISSIPPI',
-      'MO': 'MISSOURI',
-      'MT': 'MONTANA',
-      'NE': 'NEBRASKA',
-      'NV': 'NEVADA',
-      'NH': 'NEW HAMPSHIRE',
-      'NJ': 'NEW JERSEY',
-      'NM': 'NEW MEXICO',
-      'NY': 'NEW YORK',
-      'NC': 'NORTH CAROLINA',
-      'ND': 'NORTH DAKOTA',
-      'OH': 'OHIO',
-      'OK': 'OKLAHOMA',
-      'OR': 'OREGON',
-      'PA': 'PENNSYLVANIA',
-      'RI': 'RHODE ISLAND',
-      'SC': 'SOUTH CAROLINA',
-      'SD': 'SOUTH DAKOTA',
-      'TN': 'TENNESSEE',
-      'TX': 'TEXAS',
-      'UT': 'UTAH',
-      'VT': 'VERMONT',
-      'VA': 'VIRGINIA',
-      'WA': 'WASHINGTON',
-      'WV': 'WEST VIRGINIA',
-      'WI': 'WISCONSIN',
-      'WY': 'WYOMING',
-    };
+  // Define mappings for state abbreviations
+  Map<String, String> stateAbbreviations = {
+    'AL': 'ALABAMA',
+    'AK': 'ALASKA',
+    'AZ': 'ARIZONA',
+    'AR': 'ARKANSAS',
+    'CA': 'CALIFORNIA',
+    'CO': 'COLORADO',
+    'CT': 'CONNECTICUT',
+    'DE': 'DELAWARE',
+    'FL': 'FLORIDA',
+    'GA': 'GEORGIA',
+    'HI': 'HAWAII',
+    'ID': 'IDAHO',
+    'IL': 'ILLINOIS',
+    'IN': 'INDIANA',
+    'IA': 'IOWA',
+    'KS': 'KANSAS',
+    'KY': 'KENTUCKY',
+    'LA': 'LOUISIANA',
+    'ME': 'MAINE',
+    'MD': 'MARYLAND',
+    'MA': 'MASSACHUSETTS',
+    'MI': 'MICHIGAN',
+    'MN': 'MINNESOTA',
+    'MS': 'MISSISSIPPI',
+    'MO': 'MISSOURI',
+    'MT': 'MONTANA',
+    'NE': 'NEBRASKA',
+    'NV': 'NEVADA',
+    'NH': 'NEW HAMPSHIRE',
+    'NJ': 'NEW JERSEY',
+    'NM': 'NEW MEXICO',
+    'NY': 'NEW YORK',
+    'NC': 'NORTH CAROLINA',
+    'ND': 'NORTH DAKOTA',
+    'OH': 'OHIO',
+    'OK': 'OKLAHOMA',
+    'OR': 'OREGON',
+    'PA': 'PENNSYLVANIA',
+    'RI': 'RHODE ISLAND',
+    'SC': 'SOUTH CAROLINA',
+    'SD': 'SOUTH DAKOTA',
+    'TN': 'TENNESSEE',
+    'TX': 'TEXAS',
+    'UT': 'UTAH',
+    'VT': 'VERMONT',
+    'VA': 'VIRGINIA',
+    'WA': 'WASHINGTON',
+    'WV': 'WEST VIRGINIA',
+    'WI': 'WISCONSIN',
+    'WY': 'WYOMING',
+  };
 
-    // Check if input matches state or abbreviation
-    return sheetState == input || stateAbbreviations.containsKey(input) && stateAbbreviations[input] == sheetState;
-  }
+  // Normalize input and sheetState to uppercase and trim whitespace
+  String normalizedInput = input.trim().toUpperCase();
+  String normalizedSheetState = sheetState.trim().toUpperCase();
+
+  // Check if input matches state abbreviation or full name
+  return normalizedSheetState == normalizedInput || 
+         stateAbbreviations.containsKey(normalizedInput) && 
+         stateAbbreviations[normalizedInput] == normalizedSheetState;
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -232,12 +250,12 @@ class _IndividualAddressPageState extends State<IndividualAddressPage> {
       appBar: AppBar(
         title: Text(
           'Wide Address Search',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(color: Colors.white),
         ),
         centerTitle: true,
         actions: [
           IconButton(
-            icon: Icon(Icons.help_outline),
+           icon: Icon(Icons.help_outline, color: Colors.white), 
             onPressed: () {
               Navigator.push(
                 context,
@@ -247,6 +265,7 @@ class _IndividualAddressPageState extends State<IndividualAddressPage> {
           ),
         ],
         backgroundColor: Colors.black,
+        automaticallyImplyLeading: false,
       ),
       body: Stack(
         children: [
@@ -277,7 +296,7 @@ class _IndividualAddressPageState extends State<IndividualAddressPage> {
                   child: Text('Search'),
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
-                    backgroundColor: Colors.blue[800],
+                    backgroundColor: Colors.black,
                     padding: EdgeInsets.symmetric(vertical: 15),
                     textStyle: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
                   ),

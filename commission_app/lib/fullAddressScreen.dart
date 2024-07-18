@@ -67,13 +67,25 @@ class _FullAddressPageState extends State<FullAddressPage> {
 
   void _searchByFullAddress(String fullAddress) {
     final matches = _addresses.where((address) {
-      if (address.length > 4) {
+      if (address.length > 8) { // Adjusted to include up to column I (commission)
         String formattedAddress = '${address[0]} ${address[1]}, ${address[3]}, ${address[4]}';
-        return formattedAddress.contains(fullAddress.toUpperCase());
+        String commission = address[8];
+
+        // Check if the formatted address contains the full address query
+        bool addressMatch = formattedAddress.toUpperCase().contains(fullAddress.toUpperCase());
+
+        // Include rows where commission is not empty
+        if (addressMatch && commission.isNotEmpty) {
+          return true;
+        } else {
+          print('No match: $formattedAddress | Commission: $commission');
+          return false;
+        }
       } else {
         return false;
       }
     }).toList();
+
     setState(() {
       _searchResults = matches;
       _hasSearched = true;
@@ -87,11 +99,11 @@ class _FullAddressPageState extends State<FullAddressPage> {
         backgroundColor: Colors.black,
         title: Text(
           'Full Address Search',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white), // Bold white text
+          style: TextStyle(color: Colors.white),
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.help_outline),
+            icon: Icon(Icons.help_outline, color: Colors.white), 
             onPressed: () {
               Navigator.push(
                 context,
@@ -101,13 +113,14 @@ class _FullAddressPageState extends State<FullAddressPage> {
           ),
         ],
         centerTitle: true,
+        automaticallyImplyLeading: false,
       ),
       body: Stack(
         children: [
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/Lighthouse.jpg'), // Replace with your image path
+                image: AssetImage('assets/Lighthouse.jpg'),
                 fit: BoxFit.cover,
               ),
             ),
@@ -117,18 +130,20 @@ class _FullAddressPageState extends State<FullAddressPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SizedBox(height: 20), // Add space above the search box
+                SizedBox(height: 20),
                 _buildSearchInput(),
                 SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () {
                     _searchByFullAddress(_addressController.text.trim());
                   },
-                  child: Text('Search'),
+                  child: Text('Search', style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold, color: Colors.white)),
+
                   style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white, backgroundColor: Color.fromRGBO(37, 117, 181, 1), // White text color
-                    padding: EdgeInsets.symmetric(vertical: 15),
-                    textStyle: TextStyle(fontSize: 18), // Increased font size
+                    foregroundColor: Colors.white,
+                    backgroundColor: Color.fromRGBO(0, 0, 0, 1), // Dark blue
+                    padding: EdgeInsets.symmetric(vertical: 20), // Larger padding
+                    textStyle: TextStyle(fontSize: 20), // Larger text
                   ),
                 ),
                 SizedBox(height: 20),
@@ -145,15 +160,15 @@ class _FullAddressPageState extends State<FullAddressPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        SizedBox(height: 40), // Adjusted spacing
+        SizedBox(height: 40),
         Container(
           decoration: BoxDecoration(
             boxShadow: [
               BoxShadow(
-                color: Colors.blue.withOpacity(0.5), // Adjust opacity and color as needed
+                color: Colors.blue.withOpacity(0.5),
                 spreadRadius: 5,
                 blurRadius: 7,
-                offset: Offset(0, 3), // changes position of shadow
+                offset: Offset(0, 3),
               ),
             ],
           ),
@@ -162,14 +177,14 @@ class _FullAddressPageState extends State<FullAddressPage> {
             onChanged: _autocompleteAddress,
             decoration: InputDecoration(
               hintText: 'Enter Full Address',
-              filled: true, // Ensures the text box is filled with white color
-              fillColor: Colors.white, // Sets the background color to white
+              filled: true,
+              fillColor: Colors.white,
               border: OutlineInputBorder(
-                borderSide: BorderSide.none, // Removes the border line
-                borderRadius: BorderRadius.circular(8.0), // Adjust border radius as needed
+                borderSide: BorderSide.none,
+                borderRadius: BorderRadius.circular(8.0),
               ),
               contentPadding:
-                  EdgeInsets.symmetric(vertical: 15, horizontal: 15), // Increased padding
+                  EdgeInsets.symmetric(vertical: 15, horizontal: 15),
               suffixIcon: IconButton(
                 icon: Icon(Icons.clear),
                 onPressed: () {
@@ -195,15 +210,15 @@ class _FullAddressPageState extends State<FullAddressPage> {
             decoration: BoxDecoration(
               boxShadow: [
                 BoxShadow(
-                  color: Colors.blue.withOpacity(0.5), // Adjust opacity and color as needed
+                  color: Colors.blue.withOpacity(0.5),
                   spreadRadius: 2,
                   blurRadius: 5,
-                  offset: Offset(0, 3), // changes position of shadow
+                  offset: Offset(0, 3),
                 ),
               ],
               border: Border.all(color: Colors.grey),
               borderRadius: BorderRadius.circular(5),
-              color: Colors.white, // White background for dropdown
+              color: Colors.white,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -223,13 +238,13 @@ class _FullAddressPageState extends State<FullAddressPage> {
                             child: Text(
                               suggestion,
                               style: TextStyle(
-                                color: Colors.black, // Black text color
-                                fontWeight: FontWeight.bold, // Bold text
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
                         ),
-                        Divider(height: 1, color: Colors.grey), // Divider between suggestions
+                        Divider(height: 1, color: Colors.grey),
                       ],
                     ),
                   )
@@ -245,16 +260,12 @@ class _FullAddressPageState extends State<FullAddressPage> {
             ? Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: _searchResults.map((result) {
-                  if (result.length > 9) {
+                  if (result.length > 8) { // Adjusted to include up to column I (commission)
                     String address = '${result[0]} ${result[1]}';
                     String cityStateZip = '${result[3]}, ${result[4]} ${result[5]}';
                     String commission = result[8];
-                    String flatRate = result[9];
 
-                    bool isFlatRate = double.tryParse(flatRate) != null && double.parse(flatRate) > 100;
-
-                    String displayValue = isFlatRate ? '\$$flatRate' : '$commission%';
-                    Color boxColor = isFlatRate ? Colors.green : Colors.blue[700]!;
+                    double commissionValue = double.tryParse(commission) ?? 0;
 
                     return Card(
                       margin: EdgeInsets.symmetric(vertical: 10.0),
@@ -269,11 +280,18 @@ class _FullAddressPageState extends State<FullAddressPage> {
                                 children: [
                                   Text(
                                     address,
-                                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0, color: Colors.black),
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16.0,
+                                      color: Colors.black,
+                                    ),
                                   ),
                                   Text(
                                     cityStateZip,
-                                    style: TextStyle(fontSize: 14.0, color: Colors.black54),
+                                    style: TextStyle(
+                                      fontSize: 14.0,
+                                      color: Colors.black54,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -282,10 +300,14 @@ class _FullAddressPageState extends State<FullAddressPage> {
                               width: 80.0,
                               height: 80.0,
                               alignment: Alignment.center,
-                              color: boxColor,
+                              color: commissionValue > 100 ? Colors.green : Colors.blue[700],
                               child: Text(
-                                displayValue,
-                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20.0),
+                                commissionValue > 100 ? '\$${commissionValue.toStringAsFixed(2)}' : '$commission%',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: commissionValue > 100 ? 18.0 : 20.0, // Smaller font size for dollar amounts
+                                ),
                               ),
                             ),
                           ],
@@ -304,8 +326,11 @@ class _FullAddressPageState extends State<FullAddressPage> {
                 ),
                 padding: EdgeInsets.all(10),
                 margin: EdgeInsets.only(top: 20),
-                child: Text('No results found', style: TextStyle(fontSize: 16, color: Colors.white)),
+                child: Text(
+                  'No results found',
+                  style: TextStyle(fontSize: 16, color: Colors.white),
+                ),
               )
-        : SizedBox.shrink(); // Hide the output container before searching
+        : SizedBox.shrink();
   }
 }

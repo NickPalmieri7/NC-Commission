@@ -48,21 +48,18 @@ class SelectionPage extends StatelessWidget {
                   _buildSelectionButton(
                     context,
                     'MLS Search',
-                    Icons.search,
                     HomePage(initialIndex: 0),
                   ),
                   SizedBox(height: 16), // Adjust spacing
                   _buildSelectionButton(
                     context,
                     'Full Address Search',
-                    Icons.search,
                     HomePage(initialIndex: 1),
                   ),
                   SizedBox(height: 16), // Adjust spacing
                   _buildSelectionButton(
                     context,
                     'Partial Address Search',
-                    Icons.search,
                     HomePage(initialIndex: 2),
                   ),
                 ],
@@ -75,14 +72,23 @@ class SelectionPage extends StatelessWidget {
   }
 
   Widget _buildSelectionButton(
-      BuildContext context, String text, IconData icon, Widget page) {
+      BuildContext context, String text, Widget page) {
     return Container(
-      width: 300, // Adjust width of selection button container
+      width: MediaQuery.of(context).size.width * 0.75, // Adjust width of selection button container
       padding: EdgeInsets.all(12),
       margin: EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.3),
-        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.black.withOpacity(0.5), width: 1), // Thin border
+        borderRadius: BorderRadius.circular(12), // Rounded corners
+        color: Colors.white, // Solid background color
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            spreadRadius: 2,
+            blurRadius: 6,
+            offset: Offset(0, 3), // Shadow offset
+          ),
+        ],
       ),
       child: GestureDetector(
         onTap: () {
@@ -91,26 +97,14 @@ class SelectionPage extends StatelessWidget {
             MaterialPageRoute(builder: (context) => page),
           );
         },
-        child: Container(
-          padding: EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.8),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Icon(icon, color: Colors.black, size: 24),
-              SizedBox(width: 8),
-              Text(
-                text,
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
-            ],
+        child: Center(
+          child: Text(
+            text,
+            style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
           ),
         ),
       ),
