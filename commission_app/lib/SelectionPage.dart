@@ -30,9 +30,12 @@ class SelectionPage extends StatelessWidget {
                   Container(
                     width: MediaQuery.of(context).size.width * 0.8,
                     padding: EdgeInsets.all(12),
-                    child: Image.asset(
-                      'assets/Logo.png',
-                      fit: BoxFit.contain,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12), // Adjust border radius as needed
+                      child: Image.asset(
+                        'assets/Logo.png',
+                        fit: BoxFit.contain,
+                      ),
                     ),
                   ),
                   SizedBox(height: 24), // Adjust spacing
@@ -71,8 +74,7 @@ class SelectionPage extends StatelessWidget {
     );
   }
 
-  Widget _buildSelectionButton(
-      BuildContext context, String text, Widget page) {
+  Widget _buildSelectionButton(BuildContext context, String text, Widget page) {
     return Container(
       width: MediaQuery.of(context).size.width * 0.75, // Adjust width of selection button container
       padding: EdgeInsets.all(12),
@@ -90,7 +92,7 @@ class SelectionPage extends StatelessWidget {
           ),
         ],
       ),
-      child: GestureDetector(
+      child: InkWell(
         onTap: () {
           Navigator.push(
             context,

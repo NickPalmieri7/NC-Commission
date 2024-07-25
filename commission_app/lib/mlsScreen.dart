@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'helpScreen.dart';
+import 'commissionCalculator.dart';
 
 class MLSPage extends StatefulWidget {
   @override
@@ -47,23 +48,36 @@ class _MLSPageState extends State<MLSPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.black,
         title: Text(
           'MLS Search',
-          style: TextStyle(color: Colors.white, ),
+          style: TextStyle(color: Colors.white),
         ),
-        centerTitle: true,
-        backgroundColor: Colors.black,
         actions: [
-          IconButton(
-            icon: Icon(Icons.help_outline, color: Colors.white), 
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => HelpScreen()),
-              );
-            },
+          Row(
+            children: [
+              IconButton(
+                icon: Icon(Icons.attach_money, color: Colors.white),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => CommissionCalculatorScreen()),
+                  );
+                },
+              ),
+              IconButton(
+                icon: Icon(Icons.help_outline, color: Colors.white),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HelpScreen()),
+                  );
+                },
+              ),
+            ],
           ),
         ],
+        centerTitle: true,
         automaticallyImplyLeading: false,
       ),
       body: Stack(
@@ -143,8 +157,11 @@ class _MLSPageState extends State<MLSPage> {
                       String displayedCommission = commission;
                       Color backgroundColor = Colors.blue;
 
-                      if (flatRate != 'N/A' && int.tryParse(flatRate) != null && int.parse(flatRate) > 100) {
+                      if (flatRate != 'N/A' && double.tryParse(flatRate) != null && double.parse(flatRate) > 100) {
                         displayedCommission = '\$$flatRate';
+                        backgroundColor = Colors.green;
+                      } else if (commission != 'N/A' && !commission.endsWith('%') && double.tryParse(commission) != null && double.parse(commission) > 100) {
+                        displayedCommission = '\$$commission';
                         backgroundColor = Colors.green;
                       } else {
                         if (!commission.endsWith('%')) {
@@ -189,17 +206,33 @@ class _MLSPageState extends State<MLSPage> {
                     }).toList(),
                   ),
                 if (_searchResults.isEmpty && _mlsNumberController.text.isNotEmpty)
-                  Text(
-                    'No matching results found.',
-                    style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,
+                  Container(
+                    margin: EdgeInsets.only(top: 20.0),
+                    padding: EdgeInsets.all(15.0),
+                    decoration: BoxDecoration(
+                      color: Colors.redAccent,
+                      borderRadius: BorderRadius.circular(10.0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 2,
+                          blurRadius: 4,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Text(
+                      'No matching results found.',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                 if (_searchResults.isEmpty && _mlsNumberController.text.isEmpty)
-                  Text(
-                    ' ',
-                    style: TextStyle(color: const Color.fromARGB(255, 255, 255, 255), fontSize: 16),
-                    textAlign: TextAlign.center,
-                  ),
+                  SizedBox.shrink(),
               ],
             ),
           ),
