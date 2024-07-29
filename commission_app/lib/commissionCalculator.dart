@@ -34,20 +34,13 @@ Widget build(BuildContext context) {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 20),
-              Center(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: Image.asset(
-                    'assets/Logo.png',
-                    width: 220,
-                    height: 220,
-                  ),
-                ),
-              ),
+    
               SizedBox(height: 20),
               _buildInputBox(context, 'House Price', housePriceController, TextInputType.number, false),
               SizedBox(height: 20),
+              SizedBox(height: 20),
               _buildInputBox(context, 'Commission Percentage', commissionPercentageController, TextInputType.numberWithOptions(decimal: true), true),
+              SizedBox(height: 20),
               SizedBox(height: 20),
               Center(
                 child: ElevatedButton(
@@ -139,7 +132,7 @@ Widget build(BuildContext context) {
             side: BorderSide(color: Colors.white, width: 1.0),
           ),
           title: Text(
-            'Commission Amount',
+            'Compensation',
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
           content: Container(
