@@ -34,52 +34,15 @@ class HelpScreen extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 20), // Adjust as needed for spacing
-              _buildSummaryBox(),
-              SizedBox(height: 20), // Adjust as needed for spacing
-              
-              SizedBox(height: 10), // Adjust as needed for spacing
               _buildColorBox('Blue Box', 'Indicates commission percentage tied to the address.', 'assets/blueSquare.png'),
               SizedBox(height: 20), // Adjust as needed for spacing
               _buildColorBox('Green Box', 'Indicates flat compensation for the address.', 'assets/greenBox.png'),
               SizedBox(height: 20), // Adjust as needed for spacing
-              _buildContactBox(),
+              _buildHowToUseSection(),
               SizedBox(height: 20), // Adjust as needed for spacing
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildSummaryBox() {
-    return Container(
-      padding: EdgeInsets.all(16.0),
-      margin: EdgeInsets.symmetric(vertical: 8.0),
-      decoration: BoxDecoration(
-        color: Colors.white, // White box background
-        borderRadius: BorderRadius.circular(10.0), // Rounded edges
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 2,
-            blurRadius: 5,
-            offset: Offset(0, 3), // changes position of shadow
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Welcome to NC Commission!',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, decoration: TextDecoration.underline), // Underline the title
-          ),
-          SizedBox(height: 10),
-          Text(
-            'This app simplifies the process for real estate agents to determine their earnings from property sales. It includes MLS number entry, address autocomplete, and detailed address search capabilities for quick access to commission or flat compensation figures.',
-            style: TextStyle(fontSize: 18),
-          ),
-        ],
       ),
     );
   }
@@ -131,11 +94,10 @@ class HelpScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildContactBox() {
+  Widget _buildHowToUseSection() {
     return Container(
       padding: EdgeInsets.all(16.0),
       margin: EdgeInsets.symmetric(vertical: 8.0),
-      width: double.infinity, // Full width
       decoration: BoxDecoration(
         color: Colors.white, // White box background
         borderRadius: BorderRadius.circular(10.0), // Rounded edges
@@ -152,18 +114,13 @@ class HelpScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Don\'t see your listing?',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            'How To Use This App',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 10),
           Text(
-            'Email Denise!',
+            'This app provides real estate agents with a convenient way to determine their earnings from property sales. Use the MLS search to find properties and view detailed commission information or flat compensation amounts. For address searches, use the autocomplete feature to quickly find properties and their corresponding compensation details.',
             style: TextStyle(fontSize: 16),
-          ),
-          SizedBox(height: 10),
-          Text(
-            'DeniseKinney@seacoastrealty.com', // Denise's email
-            style: TextStyle(fontSize: 16, color: Colors.blue, decoration: TextDecoration.underline),
           ),
         ],
       ),

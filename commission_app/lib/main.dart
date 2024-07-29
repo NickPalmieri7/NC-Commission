@@ -67,19 +67,19 @@ class _HomePageState extends State<HomePage> {
           });
         },
         items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home, color: Colors.white),
-            label: 'MLS',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search, color: Colors.white),
-            label: 'Full Address',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.location_city, color: Colors.white),
-            label: 'Individual Address',
-          ),
-        ],
+  BottomNavigationBarItem(
+    icon: Icon(Icons.numbers, color: Colors.white), // # symbol for MLS
+    label: 'MLS',
+  ),
+  BottomNavigationBarItem(
+    icon: Icon(Icons.search, color: Colors.white), // Magnifying glass for Exact
+    label: 'Exact',
+  ),
+  BottomNavigationBarItem(
+    icon: Icon(Icons.map, color: Colors.white), // Wide area representation for Area
+    label: 'Area',
+  ),
+],
         selectedItemColor: Colors.white, // Color of selected item
         unselectedItemColor: Colors.white.withOpacity(0.6), // Color of unselected items
         showSelectedLabels: true, // Show labels for selected items
