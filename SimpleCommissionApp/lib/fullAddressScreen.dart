@@ -247,7 +247,7 @@ Widget build(BuildContext context) {
       ],
     );
   }
- Widget _buildOutputContainer() {
+Widget _buildOutputContainer() {
   return _hasSearched
       ? _searchResults.isNotEmpty
           ? Column(
@@ -258,8 +258,16 @@ Widget build(BuildContext context) {
                   String cityStateZip = '${result[3]}, ${result[4]} ${result[5]}';
                   String commission = result[8];
 
-                  double commissionValue = double.tryParse(commission) ?? 0;
+                  // Strip out any non-numeric characters except for the decimal point
+                  String formattedCommission = commission.replaceAll(RegExp(r'[^\d.]'), '');
+
+                  // Parse the commission value
+                  double commissionValue = double.tryParse(formattedCommission) ?? 0;
                   bool isLargeNumber = commissionValue > 100;
+                  String displayCommission = isLargeNumber ? '\$${commissionValue.toStringAsFixed(2)}' : '$formattedCommission%';
+
+                  // Determine the box color
+                  Color boxColor = isLargeNumber ? Colors.green : (Colors.blue[700] as Color);
 
                   // Adjust font size based on the length of the number
                   double fontSize = commissionValue > 1000 ? 24.0 : (isLargeNumber ? 28.0 : 30.0);
@@ -299,9 +307,9 @@ Widget build(BuildContext context) {
                               width: double.infinity, // Fill available width
                               padding: const EdgeInsets.all(10.0), // Smaller padding
                               alignment: Alignment.center,
-                              color: commissionValue > 100 ? Colors.green : Colors.blue[700],
+                              color: boxColor,
                               child: Text(
-                                commissionValue > 100 ? '\$${commissionValue.toStringAsFixed(2)}' : '$commission%',
+                                displayCommission,
                                 style: commissionTextStyle,
                                 overflow: TextOverflow.ellipsis, // Handle text overflow
                               ),
