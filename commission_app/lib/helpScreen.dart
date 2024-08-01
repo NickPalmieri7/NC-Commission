@@ -40,6 +40,7 @@ class HelpScreen extends StatelessWidget {
               SizedBox(height: 20), // Adjust as needed for spacing
               _buildHowToUseSection(),
               SizedBox(height: 20), // Adjust as needed for spacing
+              _buildDisclaimerSection(), // New section added
             ],
           ),
         ),
@@ -120,6 +121,39 @@ class HelpScreen extends StatelessWidget {
           SizedBox(height: 10),
           Text(
             'This app provides real estate agents with a convenient way to determine their earnings from property sales. Use the MLS search to find properties and view detailed commission information or flat compensation amounts. For address searches, use the autocomplete feature to quickly find properties and their corresponding compensation details.',
+            style: TextStyle(fontSize: 16),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDisclaimerSection() {
+    return Container(
+      padding: EdgeInsets.all(16.0),
+      margin: EdgeInsets.symmetric(vertical: 8.0),
+      decoration: BoxDecoration(
+        color: Colors.white, // White box background
+        borderRadius: BorderRadius.circular(10.0), // Rounded edges
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 2,
+            blurRadius: 5,
+            offset: Offset(0, 3), // changes position of shadow
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Disclaimer',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 10),
+          Text(
+            'This Information Not Guaranteed. Brokers make an effort to deliver accurate information, but buyers should independently verify any information on which they will rely in a transaction. The listing broker shall not be responsible for any typographical errors, misinformation, or misprints, and they shall be held totally harmless from any damages arising from reliance upon this data.',
             style: TextStyle(fontSize: 16),
           ),
         ],

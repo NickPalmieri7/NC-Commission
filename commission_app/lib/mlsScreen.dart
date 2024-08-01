@@ -146,13 +146,13 @@ class _MLSPageState extends State<MLSPage> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: _searchResults.map((row) {
-                      String houseNumber = row[0];
-                      String streetName = row[1];
-                      String city = row[2];
-                      String state = row[3];
-                      String zip = row[4];
-                      String commission = row.length > 8 ? row[8].toString() : 'N/A';
-                      String flatRate = row.length > 9 ? row[9].toString() : 'N/A';
+                      String houseNumber = (row[0] ?? '').replaceAll(',', '');
+                      String streetName = (row[1] ?? '').replaceAll(',', '');
+                      String city = (row[2] ?? '').replaceAll(',', '');
+                      String state = (row[3] ?? '').replaceAll(',', '');
+                      String zip = (row[4] ?? '').replaceAll(',', '');
+                      String commission = row.length > 8 ? row[8].toString().replaceAll(',', '') : 'N/A';
+                      String flatRate = row.length > 9 ? row[9].toString().replaceAll(',', '') : 'N/A';
 
                       String displayedCommission = commission;
                       Color backgroundColor = Colors.blue;
@@ -181,7 +181,7 @@ class _MLSPageState extends State<MLSPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      '$houseNumber $streetName'.replaceAll(',', ''),
+                                      '$houseNumber $streetName',
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold, fontSize: 16.0, color: Colors.black),
                                     ),
