@@ -45,14 +45,15 @@ class SelectionPage extends StatelessWidget {
                     "Click the button to continue:",
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 20,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
+                      fontFamily: 'DMSans',
                     ),
                   ),
                   const SizedBox(height: 20),
                   _buildSelectionButton(
                     context,
-                    'Search Your Commission',
+                    'Buyer Agent Compensation',
                     const HomePage(initialIndex: 0),
                   ),
                 ],
@@ -90,12 +91,17 @@ class SelectionPage extends StatelessWidget {
           );
         },
         child: Center(
-          child: Text(
-            text,
-            style: const TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              text,
+              style: const TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                fontFamily: 'DMSans',
+                overflow: TextOverflow.ellipsis, // Ensures text stays on one line
+              ),
             ),
           ),
         ),

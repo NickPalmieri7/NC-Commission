@@ -17,7 +17,8 @@ class SearchResultsScreen extends StatelessWidget {
           style: TextStyle(
             color: Colors.white, // White lettering
             fontWeight: FontWeight.bold, // Bold text
-            fontSize: 24, // Larger font size
+            fontSize: 24, 
+            fontFamily: 'DMSans',// Larger font size
           ),
         ),
         leading: IconButton(
@@ -76,6 +77,8 @@ class SearchResultsScreen extends StatelessWidget {
                               color: Colors.white,
                               fontSize: 16.0,
                               fontWeight: FontWeight.bold,
+                              fontFamily: 'DMSans',
+                            
                             ),
                             textAlign: TextAlign.center,
                           ),
@@ -140,12 +143,14 @@ class SearchResultsScreen extends StatelessWidget {
                                               fontWeight: FontWeight.bold,
                                               fontSize: 16.0,
                                               color: Colors.black,
+                                              fontFamily: 'DMSans',
                                             ),
                                           ),
                                           Text(
                                             cityStateZip,
                                             style: const TextStyle(
                                               fontSize: 14.0,
+                                              fontFamily: 'DMSans',
                                               color: Colors.black54,
                                             ),
                                           ),
@@ -164,6 +169,7 @@ class SearchResultsScreen extends StatelessWidget {
                                           style: TextStyle(
                                             color: Colors.white,
                                             fontWeight: FontWeight.bold,
+                                            fontFamily: 'DMSans',
                                             fontSize: displayText.length > 6 ? 14.0 : 20.0, // Adjust font size based on number length
                                           ),
                                         ),

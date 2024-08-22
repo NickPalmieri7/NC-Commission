@@ -94,13 +94,14 @@ class HelpScreen extends StatelessWidget {
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
-                    fontStyle: FontStyle.italic, // Italicized titles
+                    fontStyle: FontStyle.italic, 
+                    fontFamily: 'DMSans',// Italicized titles
                   ),
                 ),
                 const SizedBox(height: 8.0),
                 Text(
                   description,
-                  style: const TextStyle(fontSize: 16, color: Colors.black), // Normal body text
+                  style: const TextStyle(fontSize: 16, color: Colors.black,fontFamily: 'DMSans',), // Normal body text
                 ),
               ],
             ),
@@ -135,13 +136,14 @@ class HelpScreen extends StatelessWidget {
               fontSize: 24,
               fontWeight: FontWeight.bold,
               color: Colors.black,
-              fontStyle: FontStyle.italic, // Italicized title
+              fontStyle: FontStyle.italic,
+              fontFamily: 'DMSans', // Italicized title
             ),
           ),
           SizedBox(height: 10),
           Text(
             'Please note that it may take up to an hour or longer for the property information to display here after being updated on Dotloop.',
-            style: TextStyle(fontSize: 16, color: Colors.black), // Normal body text
+            style: TextStyle(fontSize: 16, color: Colors.black,fontFamily: 'DMSans',), // Normal body text
           ),
         ],
       ),
@@ -173,13 +175,14 @@ class HelpScreen extends StatelessWidget {
               fontSize: 24,
               fontWeight: FontWeight.bold,
               color: Colors.black,
-              fontStyle: FontStyle.italic, // Italicized title
+              fontStyle: FontStyle.italic,
+              fontFamily: 'DMSans', // Italicized title
             ),
           ),
           SizedBox(height: 10),
           Text(
             'This app provides real estate agents with a convenient way to determine their earnings from property sales. Use the MLS search to find properties and view detailed commission information or flat compensation amounts. For address searches, use the autocomplete feature to quickly find properties and their corresponding compensation details.',
-            style: TextStyle(fontSize: 16, color: Colors.black), // Normal body text
+            style: TextStyle(fontSize: 16, color: Colors.black,fontFamily: 'DMSans',), // Normal body text
           ),
         ],
       ),
@@ -208,16 +211,17 @@ class HelpScreen extends StatelessWidget {
           Text(
             'Disclaimer',
             style: TextStyle(
-              fontSize: 24,
+              fontSize: 22,
               fontWeight: FontWeight.bold,
               color: Colors.black,
-              fontStyle: FontStyle.italic, // Italicized title
+              fontStyle: FontStyle.italic,
+              fontFamily: 'DMSans', // Italicized title
             ),
           ),
           SizedBox(height: 10),
           Text(
             'This Information Not Guaranteed. Brokers make an effort to deliver accurate information, but buyers should independently verify any information on which they will rely in a transaction. The listing broker shall not be responsible for any typographical errors, misinformation, or misprints, and they shall be held totally harmless from any damages arising from reliance upon this data.',
-            style: TextStyle(fontSize: 16, color: Colors.black), // Normal body text
+            style: TextStyle(fontSize: 16, color: Colors.black,fontFamily: 'DMSans',), // Normal body text
           ),
         ],
       ),
