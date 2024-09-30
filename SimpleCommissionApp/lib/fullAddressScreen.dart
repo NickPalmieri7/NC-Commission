@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'helpScreen.dart';
-// Import ResultsScreen
 
 class FullAddressPage extends StatefulWidget {
   const FullAddressPage({super.key});
@@ -19,10 +19,22 @@ class _FullAddressPageState extends State<FullAddressPage> {
   bool _hasSearched = false;
   bool _showEmptySearchMessage = false;
 
+  // Method Channel for making phone calls
+  static const platform = MethodChannel('com.yourcompany.calls/call');
+
   @override
   void initState() {
     super.initState();
     _fetchAddresses();
+  }
+
+  Future<void> _makePhoneCall(String phoneNumber) async {
+    try {
+      final String result = await platform.invokeMethod('makeCall', {'phoneNumber': phoneNumber});
+      print(result);
+    } on PlatformException catch (e) {
+      print("Failed to make call: '${e.message}'.");
+    }
   }
 
   void _fetchAddresses() async {
@@ -32,8 +44,8 @@ class _FullAddressPageState extends State<FullAddressPage> {
     ];
     const String apiKey = 'AIzaSyCimNStnnBIFYVP5LLmvvEP8t_L9TudqHA';
     final List<String> ranges = [
-      'APIQueryFiltered!A:J', // For the first spreadsheet
-      'CommissionFiltered!A:J' // For the second spreadsheet
+      'APIQueryFiltered!A:N', // Adjusted to include columns up to N
+      'CommissionFiltered!A:N' // Adjusted to include columns up to N
     ];
 
     try {
@@ -50,7 +62,7 @@ class _FullAddressPageState extends State<FullAddressPage> {
             setState(() {
               _addresses.addAll(List<List<String>>.from(
                   data['values'].where((address) {
-                    return address.length > 8 && address[8].isNotEmpty;
+                    return address.length >= 14 && address[8].isNotEmpty; // Ensure enough columns and valid commission
                   }).map((address) =>
                       List<String>.from(address.map((field) => field.toUpperCase())))));
             });
@@ -92,14 +104,13 @@ class _FullAddressPageState extends State<FullAddressPage> {
     }
 
     final matches = _addresses.where((address) {
-      if (address.length > 8) { // Adjusted to include up to column I (commission)
+      if (address.length >= 14) { // Ensure there is enough data (adjusted to 14 columns)
         String formattedAddress = '${address[0]} ${address[1]}, ${address[3]}, ${address[4]}';
         String commission = address[8];
 
         // Check if the formatted address contains the full address query
         bool addressMatch = formattedAddress.toUpperCase().contains(fullAddress.toUpperCase());
 
-        // Include rows where commission is not empty
         if (addressMatch && commission.isNotEmpty) {
           return true;
         } else {
@@ -107,6 +118,7 @@ class _FullAddressPageState extends State<FullAddressPage> {
           return false;
         }
       } else {
+        print('Insufficient data for address.');
         return false;
       }
     }).toList();
@@ -125,7 +137,7 @@ class _FullAddressPageState extends State<FullAddressPage> {
         backgroundColor: Colors.black,
         title: const Text(
           'Compensation Search',
-          style: TextStyle(color: Colors.white, fontFamily: 'DMSans',fontSize: 16),
+          style: TextStyle(color: Colors.white, fontFamily: 'DMSans', fontSize: 16),
         ),
         actions: [
           const SizedBox(width: 1),
@@ -183,65 +195,64 @@ class _FullAddressPageState extends State<FullAddressPage> {
     );
   }
 
-Widget _buildSearchInput() {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      const SizedBox(height: 20), // Adjusted the height to reduce the gap
-      Container(
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Colors.blue.withOpacity(0.5),
-              spreadRadius: 5,
-              blurRadius: 7,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: TextField(
-          controller: _addressController,
-          onChanged: (value) {
-            _autocompleteAddress(value);
+  Widget _buildSearchInput() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const SizedBox(height: 20),
+        Container(
+          decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: Colors.blue.withOpacity(0.5),
+                spreadRadius: 5,
+                blurRadius: 7,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: TextField(
+            controller: _addressController,
+            onChanged: (value) {
+              _autocompleteAddress(value);
 
-            if (value.isEmpty) {
-              setState(() {
-                _autocompleteSuggestions.clear();
-                _searchResults.clear(); // Clear the search results
-                _hasSearched = false; // Reset the search state
-                _showEmptySearchMessage = false; // Hide the empty search message
-              });
-            }
-          },
-          decoration: InputDecoration(
-            hintText: 'Enter Full Address',
-            filled: true,
-            fillColor: Colors.white,
-            border: OutlineInputBorder(
-              borderSide: BorderSide.none,
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
-            suffixIcon: IconButton(
-              icon: const Icon(Icons.clear),
-              onPressed: () {
-                _addressController.clear();
+              if (value.isEmpty) {
                 setState(() {
                   _autocompleteSuggestions.clear();
-                  _searchResults.clear(); // Clear the search results
-                  _hasSearched = false; // Reset the search state
-                  _showEmptySearchMessage = false; // Hide the empty search message
+                  _searchResults.clear();
+                  _hasSearched = false;
+                  _showEmptySearchMessage = false;
                 });
-              },
+              }
+            },
+            decoration: InputDecoration(
+              hintText: 'Enter Full Address',
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(
+                borderSide: BorderSide.none,
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.clear),
+                onPressed: () {
+                  _addressController.clear();
+                  setState(() {
+                    _autocompleteSuggestions.clear();
+                    _searchResults.clear();
+                    _hasSearched = false;
+                    _showEmptySearchMessage = false;
+                  });
+                },
+              ),
             ),
           ),
         ),
-      ),
-      _buildAutocompleteSuggestions(), // This will follow immediately after the search box without a gap
-    ],
-  );
-}
-
+        _buildAutocompleteSuggestions(),
+      ],
+    );
+  }
 
   Widget _buildOutputContainer() {
     return _hasSearched
@@ -249,10 +260,18 @@ Widget _buildSearchInput() {
             ? Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: _searchResults.map((result) {
-                  if (result.length > 8) { // Ensure there is enough data
+                  if (result.length >= 14) { // Ensure there is enough data
                     String address = '${result[0]} ${result[1]}';
                     String cityStateZip = '${result[3]}, ${result[4]} ${result[5]}';
                     String commission = result[8];
+                    String agentName = result[12].isNotEmpty ? result[12] : 'No Name Available'; // Column M for agent name
+                    String phoneNumber = result[13].isNotEmpty ? result[13] : 'No Phone Number Available'; // Column N for agent phone number
+
+                    // Debugging output
+                    print('Address: $address');
+                    print('Agent Name: $agentName');
+                    print('Phone Number: $phoneNumber');
+                    print('Commission: $commission');
 
                     double commissionValue = double.tryParse(commission) ?? 0;
 
@@ -270,11 +289,11 @@ Widget _buildSearchInput() {
                     );
 
                     return Container(
-                      margin: const EdgeInsets.symmetric(vertical: 10.0), // Vertical margin
+                      margin: const EdgeInsets.symmetric(vertical: 10.0),
                       child: Card(
-                        margin: const EdgeInsets.all(0.0), // No margin for the card
+                        margin: const EdgeInsets.all(0.0),
                         child: Padding(
-                          padding: const EdgeInsets.all(10.0), // Card padding
+                          padding: const EdgeInsets.all(10.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -282,7 +301,7 @@ Widget _buildSearchInput() {
                                 address,
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 18.0, // Slightly larger font size for the address
+                                  fontSize: 18.0,
                                   color: Colors.black,
                                   fontFamily: 'DMSans',
                                 ),
@@ -291,21 +310,21 @@ Widget _buildSearchInput() {
                               Text(
                                 cityStateZip,
                                 style: const TextStyle(
-                                  fontSize: 14.0, // Slightly smaller font size for city, state, and zip
+                                  fontSize: 14.0,
                                   color: Colors.black54,
                                   fontFamily: 'DMSans',
                                 ),
                               ),
                               const SizedBox(height: 10),
                               Container(
-                                width: double.infinity, // Fill available width
-                                padding: const EdgeInsets.all(10.0), // Padding inside the box
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(10.0),
                                 alignment: Alignment.center,
                                 color: commissionValue > 100 ? Colors.green : Colors.blue[700],
                                 child: Text(
                                   commissionValue > 100 ? '\$${commissionValue.toStringAsFixed(2)}' : '$commission%',
                                   style: commissionTextStyle,
-                                  overflow: TextOverflow.ellipsis, // Handle text overflow
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                               const SizedBox(height: 15),
@@ -321,28 +340,30 @@ Widget _buildSearchInput() {
                               ),
                               const SizedBox(height: 5),
                               Text(
-                                'Agent Name: [Placeholder]',
+                                'Agent Name: $agentName',
                                 style: defaultTextStyle,
                               ),
-                              const SizedBox(height: 15),
-                              // Contact Info Section
-                              const Text(
-                                'Contact Info',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18.0,
-                                  color: Colors.black,
-                                  fontFamily: 'DMSans',
+                              GestureDetector(
+                                onTap: () {
+                                  if (phoneNumber != 'No Phone Number Available') {
+                                    _makePhoneCall(phoneNumber);
+                                  }
+                                },
+                                child: RichText(
+                                  text: TextSpan(
+                                    text: 'Phone: ',
+                                    style: defaultTextStyle,
+                                    children: [
+                                      TextSpan(
+                                        text: phoneNumber,
+                                        style: defaultTextStyle.copyWith(
+                                          color: phoneNumber != 'No Phone Number Available' ? Colors.blue : Colors.black,
+                                          decoration: TextDecoration.none, // Remove underline
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 5),
-                              Text(
-                                'Phone: [Placeholder]',
-                                style: defaultTextStyle,
-                              ),
-                              Text(
-                                'Email: [Placeholder]',
-                                style: defaultTextStyle,
                               ),
                             ],
                           ),
@@ -350,6 +371,8 @@ Widget _buildSearchInput() {
                       ),
                     );
                   } else {
+                    // Debugging output if data is not sufficient
+                    print('Insufficient data for address.');
                     return Container();
                   }
                 }).toList(),
@@ -370,60 +393,60 @@ Widget _buildSearchInput() {
   }
 
   Widget _buildAutocompleteSuggestions() {
-  return _autocompleteSuggestions.isNotEmpty
-      ? Center(
-          child: Container(
-            margin: const EdgeInsets.only(top: 0.0), // Removed the gap between search box and suggestions
-            decoration: BoxDecoration(
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.blue.withOpacity(0.5),
-                  spreadRadius: 2,
-                  blurRadius: 5,
-                  offset: const Offset(0, 3),
-                ),
-              ],
-              border: Border.all(color: Colors.grey),
-              borderRadius: BorderRadius.circular(5),
-              color: Colors.white,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: _autocompleteSuggestions
-                  .map(
-                    (suggestion) => Column(
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            setState(() {
-                              _addressController.text = suggestion;
-                              _autocompleteSuggestions.clear();
-                              FocusScope.of(context).unfocus(); // Dismiss the keyboard
-                            });
-                            _searchByFullAddress(suggestion); // Automatically trigger the search
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: Text(
-                              suggestion,
-                              style: const TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'DMSans',
-                                fontSize: 12,
+    return _autocompleteSuggestions.isNotEmpty
+        ? Center(
+            child: Container(
+              margin: const EdgeInsets.only(top: 0.0),
+              decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.blue.withOpacity(0.5),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(5),
+                color: Colors.white,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: _autocompleteSuggestions
+                    .map(
+                      (suggestion) => Column(
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              setState(() {
+                                _addressController.text = suggestion;
+                                _autocompleteSuggestions.clear();
+                                FocusScope.of(context).unfocus();
+                              });
+                              _searchByFullAddress(suggestion);
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(10),
+                              child: Text(
+                                suggestion,
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'DMSans',
+                                  fontSize: 12,
+                                ),
+                                textAlign: TextAlign.center,
                               ),
-                              textAlign: TextAlign.center, // Center text
                             ),
                           ),
-                        ),
-                        const Divider(height: 1, color: Colors.grey),
-                      ],
-                    ),
-                  )
-                  .toList(),
+                          const Divider(height: 1, color: Colors.grey),
+                        ],
+                      ),
+                    )
+                    .toList(),
+              ),
             ),
-          ),
-        )
-      : const SizedBox.shrink();
-}
+          )
+        : const SizedBox.shrink();
+  }
 }

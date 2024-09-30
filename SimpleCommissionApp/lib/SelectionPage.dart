@@ -30,16 +30,19 @@ class SelectionPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   Container(
-                    width: MediaQuery.of(context).size.width * .95,
-                    padding: const EdgeInsets.all(12),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.asset(
-                        'assets/CompanyLogos.jpg',
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                  ),
+  width: MediaQuery.of(context).size.width * .75,
+  padding: const EdgeInsets.all(12),
+  child: ClipRRect(
+    borderRadius: BorderRadius.circular(12),
+    child: AspectRatio(
+      aspectRatio: 1.4, // Ensures the image remains square
+      child: Image.asset(
+        'assets/THELogo.png',
+        fit: BoxFit.cover, // Covers the entire area, trimming excess parts
+      ),
+    ),
+  ),
+),
                   const SizedBox(height: 36),
                   const Text(
                     "Click the button to continue:",
@@ -102,6 +105,8 @@ class SelectionPage extends StatelessWidget {
                 fontFamily: 'DMSans',
                 overflow: TextOverflow.ellipsis, // Ensures text stays on one line
               ),
+              maxLines: 1, // Limits the text to one line
+              softWrap: false, // Prevents text from wrapping
             ),
           ),
         ),
